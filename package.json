@@ -1,0 +1,11 @@
+{
+  "name": "apurimac-mapa-cultural",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mapa cultural de Apurímac con perfiles de terreno y ciudad",
+  "scripts": {
+    "dev": "node server.mjs",
+    "check": "node --check app.js && node --check destinations.js && node --check server.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

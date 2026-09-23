@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102a28">
+  <title>Apurímac y Galicia — Dos territorios, dos relatos</title>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
+  <link href="./styles.css" rel="stylesheet">
+  <script defer src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+  <script defer src="./config.js"></script>
+  <script defer src="./destinations.js"></script>
+  <!-- galicia.js se carga de forma diferida desde app.js al seleccionar España -->
+  <script defer src="./app.js"></script>
+</head>
+<body class="at-intro">
+  <!-- Pantalla de carga: se muestra mientras el mapa carga los mosaicos -->
+  <div id="splash" class="splash" aria-label="Cargando experiencia">
+    <img class="splash-emblem" src="./assets/brand/emblema-coil-v3.png" alt="Dos viajeros mirando hacia arriba" width="400" height="400">
+    <p class="splash-text">Preparando tu aventura…</p>
+  </div>
+  <div id="map" aria-label="Mapa interactivo de Apurímac"></div>
+  <header class="topbar">
+    <div class="country-navigation">
+      <nav class="country-options" id="country-options" aria-label="Elegir país del relato">
+        <button class="country-choice" data-country="PE" aria-pressed="true">Perú</button>
+        <button class="country-choice" data-country="ES" aria-pressed="false">España</button>
+      </nav>
+      <span id="location-label" aria-live="polite"></span>
+    </div>
+    <nav class="nav-actions" aria-label="Navegación del mapa">
+      <button class="back-map" id="back-map" aria-label="Volver a la zona" title="Volver a la zona" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7 7-7-7 7-7"/></svg></button>
+      <button class="nav-button" id="zone-nav" aria-pressed="false">Explorar mapa</button>
+    </nav>
+  </header>
+  <main>
+    <img class="intro-emblem" src="./assets/brand/emblema-coil-v3.png?v=shadows-1" alt="Dos viajeros mirando hacia arriba, con las banderas de Perú y España" width="1280" height="1280" fetchpriority="high">
+    <div id="story-rail" class="story-rail" aria-label="Recorrido por Abancay y Curahuasi"></div>
+    <aside id="panel" class="panel" hidden aria-label="Información del destino" tabindex="-1"></aside>
+  </main>
+  <p id="map-status" class="map-status" role="status">Cargando el mapa…</p>
+  <noscript><p class="notice">Activa JavaScript para explorar el mapa.</p></noscript>
+</body>
+</html>

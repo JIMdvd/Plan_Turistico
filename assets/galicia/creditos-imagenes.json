@@ -1,0 +1,65 @@
+[
+  {
+    "id": "santiago",
+    "title": "File:Santiago Compostela Cathedral 2023 - View from Alameda Park.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Santiago_Compostela_Cathedral_2023_-_View_from_Alameda_Park.jpg",
+    "download": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/Santiago_Compostela_Cathedral_2023_-_View_from_Alameda_Park.jpg/1280px-Santiago_Compostela_Cathedral_2023_-_View_from_Alameda_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "<a href=\"//commons.wikimedia.org/wiki/User:Fernando\" title=\"User:Fernando\">Fernando Pascullo</a>",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "description": "Santiago Compostela Cathedral 2023 - View from Alameda Park",
+    "changes": "Miniatura de Wikimedia; encuadre visual con object-fit en la web.",
+    "retrieved": "2026-09-23"
+  },
+  {
+    "id": "san-lourenzo",
+    "title": "File:Carballeira de san lourenzo.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Carballeira_de_san_lourenzo.jpg",
+    "download": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Carballeira_de_san_lourenzo.jpg/1280px-Carballeira_de_san_lourenzo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "Atobar",
+    "license": "Public domain",
+    "description": "<a href=\"https://gl.wikipedia.org/wiki/Carballeira_de_San_Lourenzo\" class=\"extiw\" title=\"gl:Carballeira de San Lourenzo\">Carballeira de San Lourenzo</a>, en <a href=\"https://gl.wikipedia.org/wiki/Santiago_de_Compostela\" class=\"extiw\" title=\"gl:Santiago de Compostela\">Santiago de Compostela</a> (xullo de 2012)",
+    "latitude": "42.878333",
+    "longitude": "-8.556389",
+    "changes": "Miniatura de Wikimedia; encuadre visual con object-fit en la web.",
+    "retrieved": "2026-09-23"
+  },
+  {
+    "id": "ponte-maceira",
+    "title": "File:Portor - Negreira - Ponte Maceira - Ponte - 02 - Panoramica.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Portor_-_Negreira_-_Ponte_Maceira_-_Ponte_-_02_-_Panoramica.jpg",
+    "download": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/Portor_-_Negreira_-_Ponte_Maceira_-_Ponte_-_02_-_Panoramica.jpg/1280px-Portor_-_Negreira_-_Ponte_Maceira_-_Ponte_-_02_-_Panoramica.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xosema\" title=\"User:Xosema\">Xosema</a>",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "description": "Bridge over the river Tambre, in Ponte Maceira (Portor), Galicia, Spain.",
+    "latitude": "42.905153",
+    "longitude": "-8.695261",
+    "changes": "Miniatura de Wikimedia; encuadre visual con object-fit en la web.",
+    "retrieved": "2026-09-23"
+  },
+  {
+    "id": "caldas",
+    "title": "File:Caldas, camiño Portugués 02-03.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Caldas,_cami%C3%B1o_Portugu%C3%A9s_02-03.JPG",
+    "download": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Caldas%2C_cami%C3%B1o_Portugu%C3%A9s_02-03.JPG/1280px-Caldas%2C_cami%C3%B1o_Portugu%C3%A9s_02-03.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "<a href=\"//commons.wikimedia.org/wiki/User:P.Lameiro\" title=\"User:P.Lameiro\">P.Lameiro</a>",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "description": "Varios peregrinos lavan os pés na fonte termal das Burgas, en Caldas de Reis.",
+    "changes": "Miniatura de Wikimedia; encuadre visual con object-fit en la web.",
+    "retrieved": "2026-09-23"
+  },
+  {
+    "id": "cortegada",
+    "title": "File:Isla de Cortegada.pav.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Isla_de_Cortegada.pav.jpg",
+    "download": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Isla_de_Cortegada.pav.jpg/1280px-Isla_de_Cortegada.pav.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "Pavlemadrid commons",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "description": "<a href=\"//commons.wikimedia.org/wiki/Isla_de_Cortegada\" class=\"mw-redirect\" title=\"Isla de Cortegada\">Isla de Cortegada</a> vista desde el Monte Lobeira",
+    "changes": "Miniatura de Wikimedia; encuadre visual con object-fit en la web.",
+    "retrieved": "2026-09-23"
+  }
+]
