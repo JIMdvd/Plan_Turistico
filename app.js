@@ -4,9 +4,28 @@
   const { profiles, terrain } = window.atlas;
 
   const countries = {
-    PE: {name:'Perú', title:'Abancay y Curahuasi', context:'Abancay · Curahuasi', center:[-70,-12], bearing:-8, zone:window.atlas.zone, places:window.atlas.places},
-    ES: {name:'España', title:window.galicia.zone.name, context:'Santiago · Ría de Arousa', center:[-4,40], bearing:0, zone:window.galicia.zone, places:window.galicia.places}
+    PE: {name:'Perú', title:'Abancay y Curahuasi', context:'Abancay · Curahuasi', center:[-70,-12], bearing:-8, zone:window.atlas.zone, places:window.atlas.places}
   };
+  let galiciaLoadPromise = null;
+  function registerSpain() {
+    if (!window.galicia?.zone || !window.galicia?.places) return false;
+    countries.ES = {name:'España', title:window.galicia.zone.name, context:'Santiago · Ría de Arousa', center:[-4,40], bearing:0, zone:window.galicia.zone, places:window.galicia.places};
+    return true;
+  }
+  function loadSpainData() {
+    if (registerSpain()) return Promise.resolve(true);
+    if (!galiciaLoadPromise) {
+      galiciaLoadPromise = new Promise(resolve => {
+        const script = document.createElement('script');
+        script.src = './galicia.js';
+        script.onload = () => resolve(registerSpain());
+        script.onerror = () => resolve(false);
+        document.head.appendChild(script);
+      }).finally(() => { galiciaLoadPromise = null; });
+    }
+    return galiciaLoadPromise;
+  }
+  registerSpain();
 
   let countryCode = 'PE', country = countries.PE, zone = country.zone, places = country.places;
   let storyPlaces = ['pachachaca', 'ampay', 'saywite', 'canon', 'cconoc'].map(id => places.find(place => place.id === id));
@@ -328,6 +347,15 @@
   $('country-options').addEventListener('click', event => {
     const selected=event.target.closest('[data-country]')?.dataset.country;
     if (!selected) return;
+    if (selected === 'ES' && !countries.ES) {
+      mapLoading(true);
+      loadSpainData().then(loaded => {
+        mapLoading(false);
+        if (loaded) switchToCountry('ES');
+        else status('No se pudieron cargar los datos de España. Revisa la conexión y vuelve a intentarlo.', true);
+      });
+      return;
+    }
     if (!countries[selected] || selected === countryCode) return;
     switchToCountry(selected);
   });
