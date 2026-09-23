@@ -132,3 +132,8 @@ body:not(.at-intro) .intro-emblem{visibility:hidden;opacity:0}
 .pin.pin-separated .pin-visual{transform:translateY(-70px)}
 .pin.pin-separated::before{content:'';position:absolute;bottom:7px;left:50%;height:70px;border-left:1px dashed #fff;pointer-events:none}
 .pin.pin-separated::after{content:'';position:absolute;bottom:4px;left:calc(50% - 3px);width:6px;height:6px;background:#f7f5ed;border-radius:50%;pointer-events:none}
+/* Indicador compacto: la cámara navega sin esperar a que terminen los mosaicos. */
+.map-status.is-loading{width:38px;height:38px;padding:0;border-radius:50%;display:grid;place-items:center;background:#122b27e8;color:transparent;font-size:0}
+.map-status.is-loading::before{content:"";width:21px;height:21px;border:2px solid #f5f3e980;border-top-color:#f5f3e9;border-radius:50%;animation:map-spin .72s linear infinite}
+@keyframes map-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.map-status.is-loading::before{animation-duration:1.8s}}

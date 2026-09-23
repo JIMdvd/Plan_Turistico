@@ -10,7 +10,7 @@ window.galicia = {
     {
       id:'santiago', name:'Santiago de Compostela', shortName:'Santiago', district:'Santiago de Compostela · A Coruña', profile:'landscape',
       coordinates:[-8.54525,42.880639], coordinateNote:'Referencia de la Catedral en la plaza del Obradoiro.', coordinateSource:'https://www.caminodesantiago.gal/es/recurso/-/recurso/3444/catedral-de-santiago-de-compostela',
-      camera:{zoom:15.5,bearing:-20,pitch:45}, image:'santiago.jpg', imageFolder:'galicia', alt:'Catedral de Santiago de Compostela vista desde el parque de la Alameda',
+      camera:{zoom:15,bearing:-20,pitch:38}, image:'santiago.jpg', imageFolder:'galicia', alt:'Catedral de Santiago de Compostela vista desde el parque de la Alameda',
       description:'La catedral y las plazas del casco histórico reúnen la memoria de una ciudad construida en torno a la peregrinación.',
       facts:[
         {label:'Catedral románica',value:'Su construcción comenzó en 1075; el edificio se amplió y transformó en épocas posteriores.'},
@@ -23,7 +23,7 @@ window.galicia = {
     {
       id:'san-lourenzo',name:'Carballeira de San Lourenzo',shortName:'San Lourenzo',district:'Santiago de Compostela · A Coruña',profile:'landscape',
       coordinates:[-8.5568849,42.878745],coordinateNote:'Referencia del robledal público, no del interior del pazo.',coordinateSource:'https://www.santiagoturismo.com/parques-e-xardins/carballeira-de-san-lourenzo',
-      camera:{zoom:16,bearing:20,pitch:45},image:'san-lourenzo.jpg',imageFolder:'galicia',alt:'Robles y senderos de la Carballeira de San Lourenzo',
+      camera:{zoom:15,bearing:20,pitch:35},image:'san-lourenzo.jpg',imageFolder:'galicia',alt:'Robles y senderos de la Carballeira de San Lourenzo',
       description:'A las afueras del casco histórico, este robledal conserva un espacio de sombra, paseo y encuentro junto al antiguo convento de San Lourenzo.',
       facts:[
         {label:'Superficie',value:'8 287 m², según la ficha municipal de turismo.'},
@@ -37,7 +37,7 @@ window.galicia = {
     {
       id:'ponte-maceira',name:'Puente de Ponte Maceira',shortName:'Ponte Maceira',district:'Ames · Negreira · A Coruña',profile:'landscape',
       coordinates:[-8.694417,42.905],coordinateNote:'Referencia de la ficha de Turismo de Galicia en el entorno del puente; no un levantamiento del centro del arco.',coordinateSource:'https://www.turismo.gal/recurso/-/detalle/7316/ponte-maceira?langId=es_ES',
-      camera:{zoom:15.6,bearing:-30,pitch:50},image:'ponte-maceira.jpg',imageFolder:'galicia',alt:'Puente de piedra de Ponte Maceira sobre el río Tambre',
+      camera:{zoom:14.8,bearing:-30,pitch:38},image:'ponte-maceira.jpg',imageFolder:'galicia',alt:'Puente de piedra de Ponte Maceira sobre el río Tambre',
       description:'El puente medieval cruza el Tambre entre Ames y Negreira, integrando el paso sobre el río en un conjunto de arquitectura tradicional.',
       facts:[
         {label:'Río y territorio',value:'Conecta las dos orillas del Tambre y los municipios de Ames y Negreira.'},
@@ -50,7 +50,7 @@ window.galicia = {
     {
       id:'caldas',name:'Caldas de Reis · Fonte da Burga',shortName:'Caldas de Reis',district:'Caldas de Reis · Pontevedra',profile:'landscape',
       coordinates:[-8.64297,42.60362],coordinateNote:'Referencia de la fuente pública Fonte das Burgas (OSM 4028040424), no de todos los manantiales.',coordinateSource:'https://mapcarta.com/es/N4028040424',
-      camera:{zoom:15.6,bearing:15,pitch:45},image:'caldas.jpg',imageFolder:'galicia',alt:'Peregrinos junto a la fuente termal de las Burgas en Caldas de Reis',
+      camera:{zoom:14.8,bearing:15,pitch:35},image:'caldas.jpg',imageFolder:'galicia',alt:'Peregrinos junto a la fuente termal de las Burgas en Caldas de Reis',
       description:'En esta villa del Camino Portugués, el agua caliente forma parte del espacio público y de una tradición termal que se remonta a época romana.',
       facts:[
         {label:'Fuente pública',value:'La Fonte da Burga fue construida por el ayuntamiento en 1881, con diseño neoclásico.'},
@@ -62,9 +62,9 @@ window.galicia = {
       imageCredit:{author:'P.Lameiro',license:'CC BY-SA 4.0',licenseUrl:'https://creativecommons.org/licenses/by-sa/4.0/',url:'https://commons.wikimedia.org/wiki/File:Caldas,_camiño_Portugués_02-03.JPG'}
     },
     {
-      id:'cortegada',name:'Carril y la isla de Cortegada',shortName:'Cortegada',district:'Vilagarcía de Arousa · Pontevedra',profile:'landscape',
+      id:'cortegada',name:'Carril y la isla de Cortegada',shortName:'Cortegada',district:'Vilagarcía de Arousa · Pontevedra',profile:'landscape',terrain:false,
       coordinates:[-8.78433,42.61839],coordinateNote:'Referencia cartográfica de la isla (OSM 4889752); la cámara incluye también Carril y la ría. No señala un embarcadero.',coordinateSource:'https://mapcarta.com/es/18594634',
-      camera:{center:[-8.779,42.615],zoom:13.5,bearing:-15,pitch:48},image:'cortegada.jpg',imageFolder:'galicia',alt:'Isla de Cortegada y ría de Arousa vistas desde el monte Lobeira',
+      camera:{center:[-8.779,42.615],zoom:13.5,bearing:-15,pitch:35},image:'cortegada.jpg',imageFolder:'galicia',alt:'Isla de Cortegada y ría de Arousa vistas desde el monte Lobeira',
       description:'Frente a Carril, Cortegada ofrece un paisaje de bosque insular y aguas de ría, distinto de las islas más expuestas al océano.',
       facts:[
         {label:'Protección',value:'Forma parte del Parque Nacional Marítimo-Terrestre de las Islas Atlánticas de Galicia.'},

@@ -3,16 +3,10 @@
   const $ = id => document.getElementById(id);
   const { profiles, terrain } = window.atlas;
 
-  // Galicia se carga de forma diferida: solo cuando el usuario elige España.
-  // Al inicio solo se conoce el módulo de Perú.
-  let galiciaLoaded = !!window.galicia;
-  function buildCountries() {
-    return {
-      PE: {name:'Perú', title:'Abancay y Curahuasi', context:'Abancay · Curahuasi', center:[-70,-12], bearing:-8, zone:window.atlas.zone, places:window.atlas.places},
-      ...(window.galicia ? {ES:{name:'España', title:window.galicia.zone.name, context:'Santiago · Ría de Arousa', center:[-4,40], bearing:0, zone:window.galicia.zone, places:window.galicia.places}} : {})
-    };
-  }
-  let countries = buildCountries();
+  const countries = {
+    PE: {name:'Perú', title:'Abancay y Curahuasi', context:'Abancay · Curahuasi', center:[-70,-12], bearing:-8, zone:window.atlas.zone, places:window.atlas.places},
+    ES: {name:'España', title:window.galicia.zone.name, context:'Santiago · Ría de Arousa', center:[-4,40], bearing:0, zone:window.galicia.zone, places:window.galicia.places}
+  };
 
   let countryCode = 'PE', country = countries.PE, zone = country.zone, places = country.places;
   let storyPlaces = ['pachachaca', 'ampay', 'saywite', 'canon', 'cconoc'].map(id => places.find(place => place.id === id));
@@ -20,13 +14,13 @@
   const storyRail = $('story-rail');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const mobile = () => matchMedia('(max-width: 760px)').matches;
-  let map, ready = false, activeId = null, activeStage = null, exploring = false, mode = 'landscape', threeD = true, scrollPending = false, scrollbarTimer, currentStyleUrl = null, errorTimer = null;
+  let map, ready = false, activeId = null, activeStage = null, exploring = false, mode = 'landscape', threeD = true, scrollPending = false, scrollbarTimer, currentStyleUrl = null, errorTimer = null, mapLoadToken = 0, appliedTerrainKey = null;
   let localityContext = 'Abancay · Curahuasi';
   const markers = [];
 
   // ── Control del splash screen ──
   const splash = $('splash');
-  let splashMinReached = false, splashMapReady = false;
+  let splashMinReached = false, splashMapReady = false, splashDismissTimer = 0, splashCheckToken = 0;
   function dismissSplash() {
     if (!splashMinReached || !splashMapReady) return;
     if (!splash || splash.classList.contains('is-hidden')) return;
@@ -35,15 +29,43 @@
     // Eliminar del DOM tras la transición para liberar memoria
     splash.addEventListener('transitionend', () => splash.remove(), { once: true });
   }
+  function finishSplashAfterMapIdle() {
+    const token = ++splashCheckToken;
+    const settle = () => {
+      if (token !== splashCheckToken || !map) return;
+      if (map.areTilesLoaded()) { splashMapReady = true; dismissSplash(); return; }
+      map.once('idle', settle);
+    };
+    map.once('idle', settle);
+    clearTimeout(splashDismissTimer);
+    splashDismissTimer = window.setTimeout(() => {
+      map.off('idle', settle);
+      splashMapReady = true;
+      dismissSplash();
+    }, 6000);
+  }
   // Bloquear scroll mientras el splash está visible
   document.body.style.overflow = 'hidden';
   const duration = ms => reducedMotion ? 0 : ms;
   const escape = text => String(text).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   function status(message, temporary = false) {
     clearTimeout(errorTimer);
-    $('map-status').textContent = message;
-    $('map-status').hidden = !message;
+    const indicator = $('map-status');
+    indicator.classList.remove('is-loading');
+    indicator.removeAttribute('aria-label');
+    indicator.textContent = message;
+    indicator.hidden = !message;
     if (temporary && message) errorTimer = setTimeout(() => { $('map-status').hidden = true; }, 5000);
+  }
+  function mapLoading(enabled) {
+    const indicator = $('map-status');
+    if (!enabled && !indicator.classList.contains('is-loading')) return;
+    clearTimeout(errorTimer);
+    indicator.textContent = '';
+    indicator.classList.toggle('is-loading', enabled);
+    if (enabled) indicator.setAttribute('aria-label', 'Cargando mapa');
+    else indicator.removeAttribute('aria-label');
+    indicator.hidden = !enabled;
   }
   function refreshLocationLabel() {
     const isFar = map && map.getZoom() < 4;
@@ -143,6 +165,9 @@
     updatePins();
     if (!ready) return;
     if (stage === 'intro') {
+      mapLoadToken++;
+      clearTimeout(errorTimer);
+      setTerrainFor();
       map.stop(); map.flyTo({center:country.center,zoom:2.3,pitch:0,bearing:country.bearing,padding:{top:Math.min(360,innerHeight*.42),bottom:0,left:0,right:0},duration:duration(1300)});
     } else if (stage === 'zone') focusZone();
     else { const place = places.find(p=>p.id===stage); if(place) focusPlace(place); }
@@ -178,8 +203,21 @@
   }
   function focusZone() {
     if (!ready) return;
+    const loadToken = ++mapLoadToken;
+    clearTimeout(errorTimer);
     map.stop();
-    map.fitBounds(zone.bounds, {padding:padding(),pitch:threeD?45:0,bearing:0,duration:duration(1800),maxZoom:11.7});
+    setTerrainFor();
+    mapLoading(true);
+    const finish = () => {
+      map.off('moveend', finish);
+      if (loadToken !== mapLoadToken) return;
+      clearTimeout(errorTimer);
+      mapLoading(false);
+      preloadPlaces(storyPlaces, storyPlaces[0]);
+    };
+    map.once('moveend', finish);
+    errorTimer = window.setTimeout(finish, 1600);
+    map.fitBounds(zone.bounds, {padding:padding(),pitch:threeD?45:0,bearing:0,duration:duration(950),maxZoom:11.7});
   }
   function openPlace(id, focusPanel = false) {
     const p = places.find(place => place.id === id); if (!p) return;
@@ -191,19 +229,38 @@
     updatePins(); focusPlace(p);
     if (focusPanel) panel.focus({preventScroll:true});
   }
-  // Precarga silenciosa de las imágenes del país activo para evitar parpadeos.
-  function preloadPlaces(list) {
-    list.forEach(place => {
+  // Carga solo la imagen del lugar visible y la siguiente. Las fotos de Perú
+  // son grandes; descargarlas todas a la vez compite con los mosaicos de Mapbox.
+  function preloadPlaces(list, activePlace = null) {
+    if (!list?.length) return;
+    const index = Math.max(0, list.indexOf(activePlace));
+    [list[index], list[(index + 1) % list.length]].filter(Boolean).forEach(place => {
       if (!place.image) return;
       const img = new Image();
+      img.decoding = 'async';
       img.src = imagePath(place);
     });
   }
   function focusPlace(p) {
     if (!ready) return;
+    const loadToken = ++mapLoadToken;
     map.stop();
-    // 1400 ms: suficiente para la animación, menos mosaicos intermedios solicitados.
-    map.flyTo({center:p.coordinates,...p.camera,pitch:threeD?p.camera.pitch:0,padding:padding(),duration:duration(1400),essential:false});
+    const camera = {center:p.coordinates,...p.camera,pitch:threeD?p.camera.pitch:0,padding:padding(),duration:duration(1150),essential:true};
+    clearTimeout(errorTimer);
+    setTerrainFor(p);
+    mapLoading(true);
+    const finish = () => {
+      map.off('moveend', finish);
+      if (loadToken !== mapLoadToken) return;
+      clearTimeout(errorTimer);
+      mapLoading(false);
+      preloadPlaces(storyPlaces, p);
+    };
+    map.once('moveend', finish);
+    errorTimer = window.setTimeout(finish, 1800);
+    // El movimiento de cámara empieza inmediatamente; no se espera a que la
+    // precarga de mosaicos termine, porque eso hacía lento el desplazamiento.
+    map.flyTo(camera);
   }
   function updatePins() {
     markers.forEach((marker,i) => {
@@ -225,7 +282,7 @@
     if (!map.getLayer('peru-highlight-fill')) map.addLayer({id:'peru-highlight-fill',type:'fill',source:'peru-boundaries','source-layer':'country_boundaries',filter:peruFilter,paint:{'fill-color':'#d8aa62','fill-opacity':['interpolate',['linear'],['zoom'],0,0.16,2.5,0.11,4,0] }},firstLabel);
     if (!map.getLayer('peru-highlight-outline')) map.addLayer({id:'peru-highlight-outline',type:'line',source:'peru-boundaries','source-layer':'country_boundaries',filter:peruFilter,paint:{'line-color':'#f0c879','line-width':['interpolate',['linear'],['zoom'],0,1.5,2.5,2.4,4,1.5,5,0],'line-opacity':['interpolate',['linear'],['zoom'],0,0.9,3.5,0.85,5,0]}},firstLabel);
     if (!map.getSource('terrain-dem')) map.addSource('terrain-dem',{type:'raster-dem',url:terrain.source,tileSize:512,maxzoom:terrain.maxzoom});
-    map.setTerrain(threeD && profile.terrain ? {source:'terrain-dem',exaggeration:terrain.exaggeration}:null);
+    setTerrainFor(activeId ? places.find(place => place.id === activeId) : null);
     map.setFog({color:'#dce7e8','high-color':'#49749d','horizon-blend':0.08,'space-color':'#0b141c','star-intensity':0.12});
     // Elevations of buildings are used only where the vector tiles supply them.
     if (profile.buildings && map.getSource('composite') && !map.getLayer('urban-buildings')) {
@@ -250,6 +307,14 @@
   function countryFilter() {
     return ['all',['==',['get','iso_3166_1'],countryCode],['==',['get','disputed'],'false'],['any',['==',['get','worldview'],'all'],['in',countryCode,['get','worldview']]]];
   }
+  function setTerrainFor(place = null) {
+    if (!map) return;
+    const enabled = threeD && profiles[mode].terrain && place?.terrain !== false;
+    const key = enabled ? 'terrain' : 'none';
+    if (appliedTerrainKey === key) return;
+    map.setTerrain(enabled ? {source:'terrain-dem',exaggeration:terrain.exaggeration} : null);
+    appliedTerrainKey = key;
+  }
   function rebuildMarkers() {
     markers.splice(0).forEach(marker => marker.remove());
     if (!map) return;
@@ -263,28 +328,15 @@
   $('country-options').addEventListener('click', event => {
     const selected=event.target.closest('[data-country]')?.dataset.country;
     if (!selected) return;
-
-    // Carga diferida de galicia.js: solo la primera vez que se elige España.
-    if (selected === 'ES' && !galiciaLoaded) {
-      status('Cargando datos de España…');
-      const script = document.createElement('script');
-      script.src = './galicia.js';
-      script.onload = () => {
-        galiciaLoaded = true;
-        countries = buildCountries();
-        status('');
-        switchToCountry('ES');
-      };
-      script.onerror = () => status('No se pudieron cargar los datos de España.', true);
-      document.head.appendChild(script);
-      return;
-    }
-
     if (!countries[selected] || selected === countryCode) return;
     switchToCountry(selected);
   });
 
   function switchToCountry(selected) {
+    mapLoadToken++;
+    clearTimeout(errorTimer);
+    if (map) map.stop();
+    status('');
     countryCode=selected; country=countries[countryCode]; zone=country.zone; places=country.places;
     document.querySelectorAll('[data-country]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.country===countryCode)));
     storyPlaces=countryCode==='PE' ? ['pachachaca','ampay','saywite','canon','cconoc'].map(id=>places.find(p=>p.id===id)) : [...places];
@@ -296,7 +348,7 @@
     $('map').setAttribute('aria-label',`Mapa interactivo de ${country.name}`);
     storyRail.setAttribute('aria-label',`Recorrido por ${country.title}`);
     renderStory(); rebuildMarkers();
-    preloadPlaces(storyPlaces); // precarga imágenes del país recién seleccionado
+    if (map) map.once('idle', () => { if (countryCode === selected) preloadPlaces(storyPlaces, storyPlaces[0]); });
     window.scrollTo({top:0,behavior:'instant'});
     if (ready) ['peru-highlight-fill','peru-highlight-outline'].forEach(id=>{if(map.getLayer(id))map.setFilter(id,countryFilter());});
     activateStage('intro',true);
@@ -342,8 +394,9 @@
       projection:'globe', pitch:0, antialias:true,
       maxPitch:75, maxZoom:18,
       logoPosition:'bottom-right', attributionControl:false,
-      maxTileCacheSize: 256, // mantiene en memoria mosaicos ya visitados
-      fadeDuration: 120      // transición más rápida al aparecer mosaicos
+      maxTileCacheSize: 256,
+      fadeDuration: 250,
+      refreshExpiredTiles: true
     });
     map.addControl(new mapboxgl.AttributionControl({compact:true}),'bottom-right');
     map.addControl(new mapboxgl.NavigationControl({visualizePitch:true}),'top-right');
@@ -352,29 +405,34 @@
     map.scrollZoom.disable();
     rebuildMarkers();
     map.on('style.load',()=>{
+      appliedTerrainKey = null;
       currentStyleUrl=profiles[mode].style;
       applyLayers(); ready=true; status('');
-      preloadPlaces(storyPlaces);
+      map.once('idle', () => {
+        if (ready) preloadPlaces(storyPlaces, activeId ? places.find(place => place.id === activeId) : storyPlaces[0]);
+      });
       if(exploring)activeId?focusPlace(places.find(p=>p.id===activeId)):focusZone();
       else updateStoryPosition(true);
       // Señalar al splash que el mapa está listo
-      splashMapReady = true;
-      dismissSplash();
+      finishSplashAfterMapIdle();
     });
     map.on('error',event=>{
       console.error('Mapbox:',event.error);
       const status401 = event.error?.status === 401 || event.error?.status === 403;
-      if (status401 || !ready) {
+      const message = String(event.error?.message || '').toLowerCase();
+      const styleFailure = !ready && /style|sprite|glyph|token|unauthorized/.test(message);
+      if (status401 || styleFailure) {
         // Error de autenticación o fallo al cargar el estilo: mensaje permanente
         status('No se pudo cargar el mapa. Revisa el token de Mapbox.');
       } else {
-        // Fallo de mosaico aislado: aviso temporal que desaparece en 5 s
-        status('Algunos mosaicos no cargaron. Reintentando…', true);
+        // Fallo de mosaico aislado: usar el indicador circular, sin aviso textual.
+        mapLoading(true);
+        errorTimer = window.setTimeout(() => mapLoading(false), 5000);
       }
     });
   } catch(error) {console.error(error);status('No se pudo iniciar el mapa. Las fichas siguen disponibles.');}
 
-  // Máximo 2 s si todo carga bien; si el mapa falla, la red de seguridad lo quita a los 8 s
+  // La pantalla no se retira hasta que el estilo y los mosaicos visibles estén listos.
   setTimeout(() => { splashMinReached = true; dismissSplash(); }, 2000);
   // Red de seguridad: si el mapa falla, quitar el splash a los 8 s de todos modos
   setTimeout(() => { splashMapReady = true; splashMinReached = true; dismissSplash(); }, 8000);
