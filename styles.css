@@ -24,6 +24,10 @@
 #location-label{font-size:9px;letter-spacing:1px;color:#ffffffb8}
 .country-brand-emblem{position:absolute;top:calc(100% + 7px);left:50%;width:clamp(360px,44vw,560px);height:auto;object-fit:contain;transform:translateX(-50%);filter:drop-shadow(0 5px 14px #0007);pointer-events:none;transition:opacity .3s ease,visibility .3s ease}
 body:not(.at-intro) .country-brand-emblem{visibility:hidden;opacity:0}
+.country-brand-emblem>img{display:block;width:100%;height:auto}
+.brand-instagram-link{position:absolute;left:77.2059%;top:25.2778%;width:17.2794%;height:11.6667%;pointer-events:auto;border-radius:2px}
+.brand-instagram-link:hover{background:#d4ae6220}
+.brand-instagram-link:focus-visible{outline:2px solid #c99949;outline-offset:2px}
 .route-pending{border-top:1px solid #cad5cc;padding-top:18px;font-style:italic}
 @media(max-width:760px){.country-navigation{position:absolute;left:14px;max-width:43%;align-items:flex-start;text-align:left}body.at-intro .country-navigation{left:50%;transform:translateX(-50%);align-items:center;text-align:center}.country-options{gap:16px}.country-choice{font-size:9px;letter-spacing:1.5px}.country-brand-emblem{width:min(380px,calc(100vw - 32px))}}
 *{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;color:var(--ink);font-family:'Segoe UI',Arial,sans-serif;background:#0d181b;overflow:hidden;-webkit-font-smoothing:antialiased}button{font:inherit;cursor:pointer;border:0}button:focus-visible,a:focus-visible{outline:3px solid #c99949;outline-offset:4px}a{color:inherit}#map{position:fixed;inset:0}
