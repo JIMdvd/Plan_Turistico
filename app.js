@@ -1,4 +1,4 @@
-(() => {
+(async () => {
   'use strict';
   const $ = id => document.getElementById(id);
   const { profiles, terrain } = window.atlas;
@@ -36,6 +36,31 @@
   let map, ready = false, activeId = null, activeStage = null, exploring = false, mode = 'landscape', threeD = true, scrollPending = false, scrollbarTimer, currentStyleUrl = null, errorTimer = null, mapLoadToken = 0, appliedTerrainKey = null;
   let localityContext = 'Abancay · Curahuasi';
   const markers = [];
+  const styleCache = new Map();
+  async function loadMapStyle(styleUrl) {
+    if (!styleCache.has(styleUrl)) {
+      const path = styleUrl.replace('mapbox://styles/', '');
+      const request = fetch(`https://api.mapbox.com/styles/v1/${path}?access_token=${encodeURIComponent(config.accessToken)}`)
+        .then(response => {
+          if (!response.ok) throw new Error(`No se pudo cargar el estilo (${response.status}).`);
+          return response.json();
+        }).then(style => {
+          // Preparar la fuente antes de iniciar Mapbox evita quitar una fuente
+          // mientras sus mosaicos y las capas del estilo se están inicializando.
+          if (style.sources['mapbox-satellite']) style.sources['mapbox-satellite'] = {
+            type: 'raster',
+            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+            tileSize: 256,
+            maxzoom: 19,
+            attribution: 'Imagery: Esri, Vantor, Earthstar Geographics, and the GIS User Community'
+          };
+          return style;
+        });
+      styleCache.set(styleUrl, request);
+      request.catch(() => styleCache.delete(styleUrl));
+    }
+    return structuredClone(await styleCache.get(styleUrl));
+  }
 
   // ── Control del splash screen ──
   const splash = $('splash');
@@ -314,14 +339,22 @@
       if (JSON.stringify(l.layout['text-field']).includes('name')) map.setLayoutProperty(l.id,'text-field',['coalesce',['get','name_es'],['get','name'],['get','name_en']]);
     });
   }
-  function switchStyle() {
+  async function switchStyle() {
     if (!map) return;
     const target = profiles[mode].style;
     if (currentStyleUrl === target) return; // evita recargar el mapa si el estilo ya es el correcto
     currentStyleUrl = target;
     ready = false;
     status('Cargando la vista…');
-    map.setStyle(target);
+    try {
+      const style = await loadMapStyle(target);
+      if (currentStyleUrl !== target) return;
+      map.setStyle(style);
+    } catch (error) {
+      currentStyleUrl = null;
+      console.error('Estilo:', error);
+      status('No se pudo cargar la vista del mapa. Recarga para volver a intentarlo.');
+    }
   }
   function countryFilter() {
     return ['all',['==',['get','iso_3166_1'],countryCode],['==',['get','disputed'],'false'],['any',['==',['get','worldview'],'all'],['in',countryCode,['get','worldview']]]];
@@ -415,8 +448,9 @@
   if (!window.mapboxgl || !mapboxgl.supported()) { status('El mapa necesita conexión y un navegador con WebGL. Puedes explorar las fichas.'); return; }
   mapboxgl.accessToken = config.accessToken;
   try {
+    const initialStyle = await loadMapStyle(profiles.landscape.style);
     map = new mapboxgl.Map({
-      container:'map', style:profiles.landscape.style,
+      container:'map', style:initialStyle,
       center:[-70,-12], zoom:2.3, bearing:-8,
       padding:{top:360,bottom:0,left:0,right:0},
       projection:'globe', pitch:0, antialias:true,
